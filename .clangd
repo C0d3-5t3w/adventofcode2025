@@ -1,3 +1,0 @@
-CompileFlags:
-  Add:
-    - "-isysroot/Library/Developer/CommandLineTools/SDKs/MacOSX15.sdk"
