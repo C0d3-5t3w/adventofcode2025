@@ -274,3 +274,92 @@ This document provides detailed explanations of all `main.c` files, their functi
 - Part 2 reads numbers vertically down a column
 
 ---
+
+## Day 7
+
+### Part 1: `day7/part1/main.c`
+
+**Purpose:** Simulates a tachyon beam splitting through a manifold grid, counting the total number of beam splits.
+
+**Functions:**
+- `main()` - Entry point that reads the manifold grid from `list.txt` and simulates beam propagation.
+
+**Logic:**
+- A tachyon beam enters at position 'S' on the first row and moves downward
+- Beams pass freely through empty space (`.`)
+- When a beam encounters a splitter (`^`), it splits into two new beams: one going to the immediate left and one to the immediate right
+- **Key insight:** When multiple beams converge on the same column position, they merge into a single beam (not tracked as multiple separate beams)
+- Each splitter activation counts as one split
+- Simulation continues until all beams exit the grid or hit splitters
+
+**Data Structures:**
+- `grid[MAX_ROWS][MAX_COLS]` (char array): 2D grid storing the manifold diagram
+- `beams[cols]` (bool array): Tracks which columns have active beams (true/false, not count)
+- `next_beams[cols]` (bool array): Buffer for next row's beam positions
+
+**Algorithm:**
+1. Find starting position 'S' in the first row
+2. Initialize a single beam at the starting column
+3. For each row (top to bottom):
+   - For each column with an active beam:
+     - If cell is `^`: increment split count, mark left and right positions for next row
+     - Otherwise: beam continues straight down
+   - Swap beam arrays for next iteration
+4. Output total split count
+
+**Constants:**
+- `MAX_ROWS` (256): Maximum grid rows
+- `MAX_COLS` (256): Maximum grid columns
+
+**Variables:**
+- `start_col` (int): Column position of 'S'
+- `total_splits` (int): Running count of splitter activations
+- `rows`, `cols` (int): Grid dimensions
+
+---
+
+### Part 2: `day7/part2/main.c`
+
+**Purpose:** Simulates a quantum tachyon particle traversing a manifold, counting the total number of distinct timelines created by the many-worlds interpretation of beam splitting.
+
+**Functions:**
+- `main()` - Entry point that reads the manifold grid from `list.txt` and simulates quantum particle propagation.
+
+**Logic:**
+- A single tachyon particle enters at position 'S' and moves downward
+- The particle passes freely through empty space (`.`)
+- When the particle encounters a splitter (`^`), time itself splits: in one timeline the particle goes left, in another it goes right
+- **Key insight:** Unlike Part 1, timelines do NOT merge when they reach the same position - each timeline is tracked separately
+- The answer is the total number of timelines after the particle completes all possible journeys
+
+**Data Structures:**
+- `grid[MAX_ROWS][MAX_COLS]` (char array): 2D grid storing the manifold diagram
+- `timelines[cols]` (long long array): Tracks number of timelines at each column position
+- `next_timelines[cols]` (long long array): Buffer for next row's timeline counts
+
+**Algorithm:**
+1. Find starting position 'S' in the first row
+2. Initialize with one timeline at the starting column
+3. For each row (top to bottom):
+   - For each column with active timelines:
+     - If cell is `^`: send timeline count to both left and right positions (each timeline splits)
+     - Otherwise: timelines continue straight down
+   - Swap timeline arrays for next iteration
+4. Sum all timeline counts across all columns at the end
+5. Output total timeline count
+
+**Key Difference from Part 1:**
+- Part 1 tracks boolean presence of beams (beams merge at same position)
+- Part 2 tracks timeline counts (timelines remain separate, each split doubles the count for that path)
+
+**Constants:**
+- `MAX_ROWS` (256): Maximum grid rows
+- `MAX_COLS` (256): Maximum grid columns
+
+**Variables:**
+- `start_col` (int): Column position of 'S'
+- `total_timelines` (long long): Final count of all timelines
+- `rows`, `cols` (int): Grid dimensions
+
+---
+
