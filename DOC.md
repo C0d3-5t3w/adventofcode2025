@@ -363,3 +363,81 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ---
 
+## Day 8
+
+### Part 1: `day8/part1/main.c`
+
+**Purpose:** Connects junction boxes in 3D space by their shortest distances, then calculates the product of the three largest circuit sizes after 1000 connection attempts.
+
+**Functions:**
+- `init_union_find(int n)` - Initializes Union-Find data structure for n elements
+- `find(int x)` - Finds root of element x with path compression
+- `union_sets(int x, int y)` - Merges sets containing x and y, returns false if already same set
+- `distance(Point a, Point b)` - Calculates Euclidean distance between two 3D points
+- `compare_edges(const void *a, const void *b)` - Comparison function for sorting edges by distance
+- `compare_int_desc(const void *a, const void *b)` - Comparison function for descending integer sort
+- `main()` - Entry point that reads junction boxes, connects them, and computes result
+
+**Data Structures:**
+- `Point` (struct): Contains `x`, `y`, `z` (int) for 3D coordinates
+- `Edge` (struct): Contains `box1`, `box2` (int) indices and `distance` (double)
+- `parent[MAX_BOXES]` (int array): Union-Find parent pointers
+- `rank_arr[MAX_BOXES]` (int array): Union-Find rank for balancing
+
+**Logic:**
+- Reads 1000 junction box coordinates from input (X,Y,Z format)
+- Calculates all pairwise distances (499,500 edges)
+- Sorts edges by distance (shortest first)
+- Processes the 1000 shortest pairs using Union-Find:
+  - If boxes are in different circuits, connect them
+  - If already in same circuit, skip (but still counts toward 1000)
+- Counts size of each resulting circuit
+- Multiplies the three largest circuit sizes
+
+**Algorithm:** Kruskal's-like approach with Union-Find (Disjoint Set Union)
+
+**Constants:**
+- `MAX_BOXES` (1000): Maximum number of junction boxes
+- `CONNECTIONS` (1000): Number of shortest pairs to process
+
+---
+
+### Part 2: `day8/part2/main.c`
+
+**Purpose:** Continues connecting junction boxes until all form a single circuit, then returns the product of X coordinates of the last two connected boxes.
+
+**Functions:**
+- `init_union_find(int n)` - Initializes Union-Find data structure for n elements
+- `find(int x)` - Finds root of element x with path compression
+- `union_sets(int x, int y)` - Merges sets containing x and y, returns false if already same set
+- `distance(Point a, Point b)` - Calculates Euclidean distance between two 3D points
+- `compare_edges(const void *a, const void *b)` - Comparison function for sorting edges by distance
+- `main()` - Entry point that connects all boxes and finds the final connection
+
+**Data Structures:**
+- `Point` (struct): Contains `x`, `y`, `z` (int) for 3D coordinates
+- `Edge` (struct): Contains `box1`, `box2` (int) indices and `distance` (double)
+- `parent[MAX_BOXES]` (int array): Union-Find parent pointers
+- `rank_arr[MAX_BOXES]` (int array): Union-Find rank for balancing
+
+**Logic:**
+- Same setup as Part 1: read coordinates, calculate all distances, sort edges
+- Connects boxes in order of shortest distance until all are in one circuit
+- Requires exactly n-1 connections to connect n boxes
+- Tracks the last successful connection made
+- Multiplies X coordinates of the two boxes in the final connection
+
+**Algorithm:** Minimum Spanning Tree construction using Kruskal's algorithm with Union-Find
+
+**Key Difference from Part 1:**
+- Part 1 processes exactly 1000 pairs (some may be redundant)
+- Part 2 continues until all boxes connected (exactly 999 successful connections for 1000 boxes)
+
+**Constants:**
+- `MAX_BOXES` (1000): Maximum number of junction boxes
+
+**Variables:**
+- `last_box1`, `last_box2` (int): Indices of boxes in the final connection
+- `connections_needed` (int): n-1 connections required for n boxes
+
+---
