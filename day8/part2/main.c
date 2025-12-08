@@ -68,7 +68,7 @@ int compare_edges(const void *a, const void *b) {
 }
 
 int main() {
-  FILE *file = fopen("../list.txt", "r");
+  FILE *file = fopen("list.txt", "r");
   if (!file) {
     fprintf(stderr, "Error opening list.txt\n");
     return 1;
