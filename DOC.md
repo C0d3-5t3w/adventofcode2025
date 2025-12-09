@@ -6,7 +6,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ## Day 1
 
-### Part 1: `day1/part1/main.c`
+### Part 1: `day1/part1/c/main.c`
 
 **Purpose:** Simulates a dial that moves left or right based on commands, counting how many times it lands exactly on zero.
 
@@ -29,7 +29,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ---
 
-### Part 2: `day1/part2/main.c`
+### Part 2: `day1/part2/c/main.c`
 
 **Purpose:** Extended version that counts how many times the dial **crosses** zero during movement, not just lands on it.
 
@@ -51,7 +51,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ## Day 2
 
-### Part 1: `day2/part1/main.c`
+### Part 1: `day2/part1/c/main.c`
 
 **Purpose:** Finds "invalid IDs" within given ranges and sums them. An invalid ID is a number whose decimal representation is exactly two identical halves (e.g., `1212`, `123123`).
 
@@ -72,7 +72,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ---
 
-### Part 2: `day2/part2/main.c`
+### Part 2: `day2/part2/c/main.c`
 
 **Purpose:** Extended invalid ID detection where a number is invalid if it consists of **any** repeating pattern (not just 2 repetitions).
 
@@ -97,7 +97,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ## Day 3
 
-### Part 1: `day3/part1/main.c`
+### Part 1: `day3/part1/c/main.c`
 
 **Purpose:** For each line, finds the maximum 2-digit "joltage" value by selecting any two digits from the line and forming a number.
 
@@ -115,7 +115,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ---
 
-### Part 2: `day3/part2/main.c`
+### Part 2: `day3/part2/c/main.c`
 
 **Purpose:** Extended version finding maximum 12-digit joltage by greedily selecting the largest available digits.
 
@@ -135,7 +135,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ## Day 4
 
-### Part 1: `day4/part1/main.c`
+### Part 1: `day4/part1/c/main.c`
 
 **Purpose:** Counts "accessible" paper rolls (`@`) in a grid. A roll is accessible if it has fewer than 4 adjacent rolls.
 
@@ -156,7 +156,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ---
 
-### Part 2: `day4/part2/main.c`
+### Part 2: `day4/part2/c/main.c`
 
 **Purpose:** Simulates iterative removal of accessible paper rolls until no more can be removed.
 
@@ -178,7 +178,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ## Day 5
 
-### Part 1: `day5/part1/main.c`
+### Part 1: `day5/part1/c/main.c`
 
 **Purpose:** Counts how many ingredient IDs fall within any of the "fresh" ranges.
 
@@ -201,7 +201,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ---
 
-### Part 2: `day5/part2/main.c`
+### Part 2: `day5/part2/c/main.c`
 
 **Purpose:** Counts the **total number** of fresh ingredient IDs by merging overlapping ranges.
 
@@ -226,7 +226,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ## Day 6
 
-### Part 1: `day6/part1/main.c`
+### Part 1: `day6/part1/c/main.c`
 
 **Purpose:** Processes vertical columns of numbers with operators, computing a grand total.
 
@@ -252,7 +252,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ---
 
-### Part 2: `day6/part2/main.c`
+### Part 2: `day6/part2/c/main.c`
 
 **Purpose:** Similar to Part 1, but reads numbers **vertically** within each column (digits stacked on top of each other).
 
@@ -277,7 +277,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ## Day 7
 
-### Part 1: `day7/part1/main.c`
+### Part 1: `day7/part1/c/main.c`
 
 **Purpose:** Simulates a tachyon beam splitting through a manifold grid, counting the total number of beam splits.
 
@@ -318,7 +318,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ---
 
-### Part 2: `day7/part2/main.c`
+### Part 2: `day7/part2/c/main.c`
 
 **Purpose:** Simulates a quantum tachyon particle traversing a manifold, counting the total number of distinct timelines created by the many-worlds interpretation of beam splitting.
 
@@ -365,7 +365,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ## Day 8
 
-### Part 1: `day8/part1/main.c`
+### Part 1: `day8/part1/c/main.c`
 
 **Purpose:** Connects junction boxes in 3D space by their shortest distances, then calculates the product of the three largest circuit sizes after 1000 connection attempts.
 
@@ -402,7 +402,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ---
 
-### Part 2: `day8/part2/main.c`
+### Part 2: `day8/part2/c/main.c`
 
 **Purpose:** Continues connecting junction boxes until all form a single circuit, then returns the product of X coordinates of the last two connected boxes.
 
@@ -444,7 +444,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ## Day 9
 
-### Part 1: `day9/part1/main.c`
+### Part 1: `day9/part1/c/main.c`
 
 **Purpose:** Finds the largest rectangle that can be formed using any two red tiles as opposite corners in a movie theater tile grid.
 
@@ -484,7 +484,7 @@ This document provides detailed explanations of all `main.c` files, their functi
 
 ---
 
-### Part 2: `day9/part2/main.c`
+### Part 2: `day9/part2/c/main.c`
 
 **Purpose:** Finds the largest rectangle using red tiles as opposite corners where ALL tiles within the rectangle are red or green (inside or on the boundary of the polygon formed by red tiles).
 
