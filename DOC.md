@@ -441,3 +441,99 @@ This document provides detailed explanations of all `main.c` files, their functi
 - `connections_needed` (int): n-1 connections required for n boxes
 
 ---
+
+## Day 9
+
+### Part 1: `day9/part1/main.c`
+
+**Purpose:** Finds the largest rectangle that can be formed using any two red tiles as opposite corners in a movie theater tile grid.
+
+**Functions:**
+- `main()` - Entry point that reads red tile coordinates from `list.txt` and finds the maximum rectangle area.
+
+**Data Structures:**
+- `Point` (struct): Contains `x`, `y` (int) for 2D coordinates of red tiles
+
+**Logic:**
+- Reads all red tile coordinates in format `x,y` from input file
+- Tries all pairs of points as potential opposite corners of a rectangle
+- Calculates inclusive area: `(|x2 - x1| + 1) * (|y2 - y1| + 1)`
+- The `+1` is needed because both corner tiles are included in the rectangle dimensions
+- Tracks and outputs the maximum area found
+
+**Algorithm:**
+1. Parse all red tile coordinates into an array
+2. For each pair of points (i, j) where i < j:
+   - Calculate width = `|x_j - x_i| + 1` (inclusive)
+   - Calculate height = `|y_j - y_i| + 1` (inclusive)
+   - Calculate area = width × height
+   - Update maximum if this area is larger
+3. Output the largest rectangle area
+
+**Key Insight:**
+- The rectangle area is inclusive of both corner tiles, so we add 1 to both dimensions
+- Example: corners at (2,5) and (11,1) give width = 10, height = 5, area = 50
+
+**Constants:**
+- `MAX_POINTS` (1000): Maximum number of red tile coordinates
+
+**Variables:**
+- `points[MAX_POINTS]` (Point array): Stores all red tile coordinates
+- `count` (int): Number of red tiles read
+- `max_area` (long long): Largest rectangle area found
+
+---
+
+### Part 2: `day9/part2/main.c`
+
+**Purpose:** Finds the largest rectangle using red tiles as opposite corners where ALL tiles within the rectangle are red or green (inside or on the boundary of the polygon formed by red tiles).
+
+**Functions:**
+- `cmp_hseg(const void *a, const void *b)` - Comparison function for sorting horizontal segments by y-coordinate, then x_min
+- `cmp_vseg(const void *a, const void *b)` - Comparison function for sorting vertical segments by x-coordinate, then y_min
+- `is_inside_or_on_boundary(int x, int y)` - Determines if a point is inside or on the boundary of the polygon using ray casting
+- `is_rectangle_valid(int x1, int y1, int x2, int y2)` - Checks if all tiles along the rectangle's edges are valid (red or green)
+- `main()` - Entry point that builds the polygon and finds the maximum valid rectangle
+
+**Data Structures:**
+- `Point` (struct): Contains `x`, `y` (int) for 2D coordinates of red tiles
+- `HSegment` (struct): Horizontal segment with `y`, `x_min`, `x_max` for boundary edges
+- `VSegment` (struct): Vertical segment with `x`, `y_min`, `y_max` for boundary edges
+- `h_segments[MAX_POINTS]` (global array): Stores horizontal boundary segments
+- `v_segments[MAX_POINTS]` (global array): Stores vertical boundary segments
+
+**Logic:**
+- Red tiles form a closed polygon connected by green tiles (axis-aligned edges)
+- Green tiles are: (1) on polygon edges between consecutive red tiles, (2) inside the polygon
+- A valid rectangle must have all its tiles be red or green
+- Uses ray casting algorithm to determine if points are inside the polygon
+- Validates rectangle by checking all points along all four edges
+
+**Algorithm:**
+1. Parse red tile coordinates from input
+2. Build horizontal and vertical segments from consecutive point pairs
+3. Sort segments for efficient lookup
+4. For each pair of red tiles (potential rectangle corners):
+   - Only consider if potential area exceeds current maximum
+   - Validate by checking all points on rectangle edges using `is_inside_or_on_boundary`
+   - Update maximum if valid and larger
+5. Output the largest valid rectangle area
+
+**Ray Casting Algorithm (`is_inside_or_on_boundary`):**
+- Cast a ray from point (x, y) to the right
+- Count vertical segment crossings where ray intersects segment
+- If point is on any segment, return true immediately
+- Odd number of crossings = inside polygon
+
+**Constants:**
+- `MAX_POINTS` (1000): Maximum number of red tile coordinates
+
+**Global Variables:**
+- `h_count` (int): Number of horizontal segments
+- `v_count` (int): Number of vertical segments
+
+**Key Difference from Part 1:**
+- Part 1 allows any rectangle between two red tiles
+- Part 2 restricts rectangles to only include red/green tiles (inside or on polygon boundary)
+
+---

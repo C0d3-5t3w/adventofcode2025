@@ -61,13 +61,13 @@ func main() {
 				currentEnd = ranges[i].end
 			}
 		} else {
-			totalFresh += (currentEnd - currentStart + 1)
+			totalFresh += currentEnd - currentStart + 1
 			currentStart = ranges[i].start
 			currentEnd = ranges[i].end
 		}
 	}
 
-	totalFresh += (currentEnd - currentStart + 1)
+	totalFresh += currentEnd - currentStart + 1
 
 	fmt.Printf("Number of fresh ingredient IDs: %d\n", totalFresh)
 }
