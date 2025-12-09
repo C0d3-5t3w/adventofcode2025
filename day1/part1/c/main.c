@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 int main() {
-  FILE *file = fopen("list.txt", "r");
+  FILE *file = fopen("../list.txt", "r");
   if (!file) {
     perror("Failed to open list.txt");
     return 1;
@@ -14,27 +14,15 @@ int main() {
 
   while (fscanf(file, " %c%d", &direction, &distance) == 2) {
     if (direction == 'L') {
-
-      int first_zero = (dial == 0) ? 100 : dial;
-      int crosses = 0;
-      if (distance >= first_zero) {
-        crosses = 1 + (distance - first_zero) / 100;
-      }
-      zero_count += crosses;
-
       dial = (dial - distance) % 100;
       if (dial < 0)
         dial += 100;
     } else if (direction == 'R') {
-
-      int first_zero = (dial == 0) ? 100 : (100 - dial);
-      int crosses = 0;
-      if (distance >= first_zero) {
-        crosses = 1 + (distance - first_zero) / 100;
-      }
-      zero_count += crosses;
-
       dial = (dial + distance) % 100;
+    }
+
+    if (dial == 0) {
+      zero_count++;
     }
   }
 

@@ -38,7 +38,7 @@ long long max_joltage(const char *line, int len) {
 }
 
 int main(void) {
-  FILE *file = fopen("list.txt", "r");
+  FILE *file = fopen("../list.txt", "r");
   if (!file) {
     perror("Failed to open list.txt");
     return 1;

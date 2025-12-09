@@ -7,7 +7,7 @@
 #define MAX_ROWS 10
 
 int main() {
-  FILE *file = fopen("list.txt", "r");
+  FILE *file = fopen("../list.txt", "r");
   if (file == NULL) {
     perror("Failed to open file");
     return EXIT_FAILURE;

@@ -22,7 +22,7 @@ int compare_ranges(const void *a, const void *b) {
 }
 
 int main(void) {
-  FILE *file = fopen("list.txt", "r");
+  FILE *file = fopen("../list.txt", "r");
   if (!file) {
     perror("Failed to open list.txt");
     return 1;

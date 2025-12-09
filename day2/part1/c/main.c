@@ -83,7 +83,7 @@ unsigned long long sum_invalid_ids_in_range(unsigned long long start,
 }
 
 int main() {
-  FILE *fp = fopen("list.txt", "r");
+  FILE *fp = fopen("../list.txt", "r");
   if (!fp) {
     perror("Failed to open list.txt");
     return 1;

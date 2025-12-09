@@ -24,7 +24,7 @@ int count_adjacent_rolls(char grid[MAX_SIZE][MAX_SIZE], int rows, int cols,
 }
 
 int main(void) {
-  FILE *file = fopen("list.txt", "r");
+  FILE *file = fopen("../list.txt", "r");
   if (!file) {
     perror("Failed to open list.txt");
     return 1;

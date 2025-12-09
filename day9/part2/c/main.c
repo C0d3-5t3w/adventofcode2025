@@ -125,7 +125,7 @@ bool is_rectangle_valid(int x1, int y1, int x2, int y2) {
 }
 
 int main() {
-  FILE *file = fopen("list.txt", "r");
+  FILE *file = fopen("../list.txt", "r");
   if (!file) {
     fprintf(stderr, "Error opening list.txt\n");
     return 1;
