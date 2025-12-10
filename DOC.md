@@ -537,3 +537,137 @@ This document provides detailed explanations of all `main.c` files, their functi
 - Part 2 restricts rectangles to only include red/green tiles (inside or on polygon boundary)
 
 ---
+
+## Day 10
+
+### Part 1: `day10/part1/c/main.c`
+
+**Purpose:** Determines the minimum number of button presses needed to configure indicator lights on factory machines to match their target patterns.
+
+**Functions:**
+- `parse_lights(const char *start, int *num_lights)` - Parses the indicator light diagram `[.##.]` and returns the target state as a bitmask
+- `parse_button(const char *start, const char **end)` - Parses a button schematic `(0,3,4)` and returns the toggle mask
+- `min_presses(int target, int *buttons, int num_buttons, int num_lights)` - Uses BFS to find minimum button presses to reach target state
+- `main()` - Entry point that reads machine configurations from `list.txt` and sums minimum presses
+
+**Data Structures:**
+- `buttons[MAX_BUTTONS]` (int array): Bitmasks representing which lights each button toggles
+- `dist[max_state]` (int array): BFS distance array for state space search
+- `queue[max_state]` (int array): BFS queue for state exploration
+
+**Logic:**
+- Each machine has indicator lights (initially all off) and buttons that toggle specific lights
+- Lights are represented as bits in an integer (bit i = light i)
+- Pressing a button XORs the current state with the button's toggle mask
+- Since pressing a button twice cancels out, each button is pressed 0 or 1 times
+- Uses BFS over the state space (2^num_lights possible states) to find minimum presses
+
+**Algorithm:**
+1. For each line in input:
+   - Parse target state from `[.##.]` notation (`.` = off/0, `#` = on/1)
+   - Parse all button schematics `(0,3,4)` into toggle masks
+   - Run BFS from state 0 (all off) to target state
+   - Each BFS transition tries pressing each button once (XOR with mask)
+   - BFS guarantees finding the minimum number of button presses
+2. Sum all minimum press counts across all machines
+
+**Input Format:**
+- Each line describes one machine
+- `[.##.]` - Target light pattern (4 lights: off, on, on, off)
+- `(1,3)` - Button that toggles lights 1 and 3 (0-indexed)
+- `{3,5,4,7}` - Joltage requirements (ignored)
+
+**Example:**
+- `[.##.] (0,2) (0,1)` - Target: lights 1,2 on (bitmask 0110 = 6)
+- Pressing `(0,2)` toggles lights 0,2 → state 0101 = 5
+- Pressing `(0,1)` toggles lights 0,1 → state 0110 = 6 ✓
+- Minimum: 2 presses
+
+**Constants:**
+- `MAX_LINE` (4096): Maximum line length
+- `MAX_LIGHTS` (16): Maximum number of indicator lights
+- `MAX_BUTTONS` (20): Maximum number of buttons per machine
+
+**Variables:**
+- `target` (int): Bitmask of target light configuration
+- `num_lights` (int): Number of indicator lights on current machine
+- `num_buttons` (int): Number of buttons on current machine
+- `total` (long long): Sum of minimum presses for all machines
+
+---
+
+### Part 2: `day10/part2/c/main.c`
+
+**Purpose:** Determines the minimum number of button presses needed to configure joltage level counters on factory machines to match their target values. Unlike Part 1 (which uses XOR toggling), each button press increments affected counters by 1.
+
+**Functions:**
+- `parse_button(const char *start, const char **end, int *indices)` - Parses a button schematic `(1,3)` and returns which counters it affects
+- `parse_targets(const char *start, int *targets)` - Parses joltage requirements `{3,5,4,7}` into an array of target values
+- `check_solution(int presses[])` - Verifies if a given button press combination achieves all target values
+- `solve_recursive(int presses[], int button_idx, int current_sum, long long best_so_far)` - Recursive solver with pruning for small cases
+- `solve_gauss_with_optimization(void)` - Main solver using Gaussian elimination with null space exploration
+- `solve_min_presses(...)` - Entry point for solving each machine configuration
+- `main()` - Reads machine configurations from `list.txt` and sums minimum presses
+
+**Data Structures:**
+- `g_coeff[MAX_COUNTERS][MAX_BUTTONS]` (global int array): Coefficient matrix where `g_coeff[c][b] = 1` if button b affects counter c
+- `g_targets[MAX_COUNTERS]` (global int array): Target values for each counter
+- `g_buttons[MAX_BUTTONS][MAX_COUNTERS]` (global int array): Which counters each button affects
+- `g_button_counts[MAX_BUTTONS]` (global int array): Number of counters affected by each button
+
+**Logic:**
+- Each machine has numeric counters (initially 0) and buttons that increment specific counters by 1
+- Pressing button `(1,3)` increments counters 1 and 3 each by 1
+- Unlike Part 1, buttons can be pressed multiple times (not just 0 or 1)
+- This is an Integer Linear Programming (ILP) problem: find non-negative integers x_i minimizing Σx_i such that Ax = targets
+- Uses Gaussian elimination to find the solution space, then searches for minimum
+
+**Algorithm:**
+1. For each line in input:
+   - Parse target values from `{3,5,4,7}` notation
+   - Parse all button schematics into counter-affect lists
+   - Build coefficient matrix A where A[counter][button] = 1 if button affects counter
+2. Solve using Gaussian elimination with optimization:
+   - Perform Gaussian elimination to get reduced row echelon form
+   - Identify pivot columns (basic variables) and free columns (free variables)
+   - If no free variables: unique solution, verify non-negative integers
+   - If free variables exist: enumerate all combinations of free variable values
+   - For each combination: compute basic variables, check validity (non-negative, integer), track minimum
+3. Fallback to recursive search with pruning for small cases
+4. Sum all minimum press counts across all machines
+
+**Gaussian Elimination Details:**
+- Builds augmented matrix [A | targets]
+- Uses partial pivoting for numerical stability
+- Identifies free variables (columns without pivots)
+- Expresses pivot variables in terms of free variables
+- Searches over free variable space (0 to max_target) to find minimum total presses
+
+**Input Format:**
+- Each line describes one machine
+- `[.##.]` - Indicator light pattern (ignored in Part 2)
+- `(1,3)` - Button that increments counters 1 and 3 (0-indexed)
+- `{3,5,4,7}` - Target joltage levels (counter 0 → 3, counter 1 → 5, etc.)
+
+**Example:**
+- `{3,5,4,7}` with buttons `(3)`, `(1,3)`, `(2)`, `(2,3)`, `(0,2)`, `(0,1)`
+- Need: counter0=3, counter1=5, counter2=4, counter3=7
+- One solution: press `(3)` once, `(1,3)` 3×, `(2,3)` 3×, `(0,2)` once, `(0,1)` 2× = 10 presses
+
+**Constants:**
+- `MAX_LINE` (4096): Maximum line length
+- `MAX_COUNTERS` (16): Maximum number of joltage counters per machine
+- `MAX_BUTTONS` (20): Maximum number of buttons per machine
+
+**Variables:**
+- `g_num_counters` (global int): Number of counters on current machine
+- `g_num_buttons` (global int): Number of buttons on current machine
+- `total` (long long): Sum of minimum presses for all machines
+
+**Key Difference from Part 1:**
+- Part 1 uses XOR toggling: pressing a button flips light states, pressing twice cancels out (0 or 1 presses per button)
+- Part 2 uses additive increments: each press adds 1 to counters, buttons can be pressed any number of times
+- Part 1 uses BFS over finite state space (2^n states)
+- Part 2 solves a system of linear equations with non-negative integer constraints (ILP)
+
+---
