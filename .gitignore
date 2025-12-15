@@ -9,14 +9,22 @@
 # day9
 # day10
 # day11
-day12
+# day12
+
+*/bin
+*/CMakeLists.txt
+*/Makefile
 
 */*/bin
 */*/CMakeLists.txt
 */*/Makefile
 
+# */list.txt
+*/challenge.txt
+
 # */*/list.txt
 */*/challenge.txt
+
 
 .air
 .clangd

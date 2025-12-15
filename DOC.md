@@ -671,3 +671,200 @@ This document provides detailed explanations of all `main.c` files, their functi
 - Part 2 solves a system of linear equations with non-negative integer constraints (ILP)
 
 ---
+
+## Day 11
+
+### Part 1: `day11/part1/c/main.c`
+
+**Purpose:** Counts all possible paths through a device network from the device labeled "you" to the device labeled "out".
+
+**Functions:**
+- `find_device(const char *name)` - Finds a device by name in the device array, returns index or -1
+- `add_device(const char *name)` - Adds a new device or returns existing device's index
+- `count_paths(const char *current)` - Recursively counts all paths from current device to "out"
+- `main()` - Entry point that reads device graph from `list.txt` and computes path count
+
+**Data Structures:**
+- `Device` (struct): Contains `name` (char array), `outputs` (array of output device names), and `output_count` (int)
+- `devices[MAX_DEVICES]` (global array): Stores all devices in the graph
+- `visiting[MAX_DEVICES]` (global bool array): Tracks nodes currently on the DFS stack to prevent cycles
+
+**Logic:**
+- Reads a directed graph where each line describes a device and its output connections
+- Format: `device_name: output1 output2 output3`
+- Uses depth-first search (DFS) to count all distinct paths from "you" to "out"
+- Cycle detection via `visiting[]` array prevents infinite loops in cyclic graphs
+- Each path is counted exactly once
+
+**Algorithm:**
+1. Parse device graph from input file
+2. Start DFS from device "you"
+3. At each device:
+   - If device is "out", return 1 (found a valid path)
+   - If device has no outputs or doesn't exist, return 0
+   - If device is already on current path (cycle), return 0
+   - Otherwise, mark device as visiting and sum paths through all outputs
+4. Return total path count
+
+**Input Format:**
+```
+aaa: you hhh
+you: bbb ccc
+bbb: ddd eee
+ccc: ddd eee fff
+```
+
+**Constants:**
+- `MAX_DEVICES` (1000): Maximum number of devices in the network
+- `MAX_OUTPUTS` (20): Maximum outputs per device
+- `MAX_NAME_LEN` (32): Maximum device name length
+
+**Variables:**
+- `device_count` (global int): Number of devices loaded
+- `result` (long long): Total number of paths from "you" to "out"
+
+---
+
+### Part 2: `day11/part2/c/main.c`
+
+**Purpose:** Counts all paths from "svr" (server rack) to "out" that visit both "dac" (digital-to-analog converter) and "fft" (fast Fourier transform) devices.
+
+**Functions:**
+- `hash_name(const char *name)` - Computes hash value for device name (djb2 algorithm)
+- `find_node(const char *name)` - Finds a node by name in the graph array
+- `memo_hash(const char *node, bool visited_dac, bool visited_fft)` - Computes hash for memoization key
+- `memo_get(...)` - Retrieves cached path count from memoization table
+- `memo_set(...)` - Stores path count in memoization table
+- `count_paths(const char *node, bool visited_dac, bool visited_fft)` - Recursively counts valid paths with state tracking
+- `main()` - Entry point that reads device graph and computes constrained path count
+
+**Data Structures:**
+- `Node` (struct): Contains `name` (char array), `outputs` (array of output names), and `output_count` (int)
+- `MemoEntry` (struct): Contains `node` (name), `visited_dac`, `visited_fft`, `value` (path count), and `valid` flag
+- `graph[MAX_NODES]` (global array): Stores device graph
+- `memo[HASH_SIZE]` (global array): Hash table for memoization (open addressing)
+- `on_path[MAX_NODES]` (global bool array): Tracks nodes on current DFS path for cycle detection
+
+**Logic:**
+- Same graph structure as Part 1, but with additional constraints
+- Paths must start at "svr" and end at "out"
+- Valid paths must visit both "dac" and "fft" devices (in any order)
+- Uses memoization to cache results based on (node, visited_dac, visited_fft) state
+- Progress counter for debugging long computations
+
+**Algorithm:**
+1. Parse device graph from input file
+2. Start DFS from "svr" with both `visited_dac` and `visited_fft` set to false
+3. At each device:
+   - Update visited flags if current node is "dac" or "fft"
+   - If device is "out", return 1 only if both dac and fft were visited
+   - Check memoization cache for previously computed result
+   - If on current path (cycle), return 0
+   - Recursively sum paths through all outputs
+   - Cache and return result
+4. Output total count of valid paths
+
+**Memoization:**
+- Key: (node_name, visited_dac, visited_fft) - 3 dimensions of state
+- Uses open addressing hash table for collision resolution
+- Dramatically reduces computation for large graphs with many shared subpaths
+
+**Constants:**
+- `MAX_NODES` (10000): Maximum devices in the network
+- `MAX_NAME_LEN` (64): Maximum device name length
+- `MAX_OUTPUTS` (100): Maximum outputs per device
+- `HASH_SIZE` (20011): Prime number for hash table size
+
+**Variables:**
+- `graph_size` (global int): Number of devices loaded
+- `call_count` (global long long): DFS call counter for progress tracking
+- `total` (long long): Final count of valid paths
+
+**Key Difference from Part 1:**
+- Part 1 counts all paths from "you" to "out"
+- Part 2 counts only paths from "svr" to "out" that visit both "dac" and "fft"
+- Part 2 uses memoization with state tracking for visited requirements
+
+---
+
+## Day 12
+
+### `day12/c/main.c`
+
+**Purpose:** Determines how many tree regions can fit all their required presents (2D shapes) using a backtracking puzzle-packing algorithm.
+
+**Functions:**
+- `rotate_shape(Shape s)` - Rotates a shape 90 degrees clockwise
+- `flip_shape(Shape s)` - Flips a shape horizontally (mirror)
+- `shapes_equal(Shape a, Shape b)` - Checks if two shapes are identical
+- `variant_exists(ShapeVariants *sv, Shape s)` - Checks if a variant already exists in the set
+- `generate_variants(Shape base, ShapeVariants *sv)` - Generates all unique rotations and flips of a shape (up to 8 variants)
+- `can_place(Shape *s, int row, int col)` - Checks if a shape can be placed at the given position
+- `place_shape(Shape *s, int row, int col, int mark)` - Places a shape on the grid with a marker
+- `remove_shape(Shape *s, int row, int col)` - Removes a shape from the grid
+- `count_remaining(int counts[])` - Counts remaining presents to place
+- `solve(int counts[], int placed)` - Recursive backtracking solver
+- `count_total_cells(int counts[])` - Counts total cells needed for all remaining presents
+- `can_fit_region(int w, int h, int counts[])` - Tests if all presents fit in a region
+- `main()` - Entry point that reads shapes and regions, outputs fit count
+
+**Data Structures:**
+- `Shape` (struct): Contains `cells[3][3]` (int array representing shape grid) and `cell_count` (int)
+- `ShapeVariants` (struct): Contains `variants[8]` (array of shape variants), `num_variants`, and `cell_count`
+- `shapes[MAX_SHAPES]` (global array): Stores all 6 shape definitions with their variants
+- `grid[MAX_HEIGHT][MAX_WIDTH]` (global int array): 2D grid for placement simulation
+
+**Logic:**
+- Input consists of two sections:
+  1. Shape definitions (6 shapes, each 3x3 grid with `#` for filled cells, `.` for empty)
+  2. Region queries (`WxH: c0 c1 c2 c3 c4 c5` - width x height with counts for each shape)
+- For each shape, pre-compute all unique rotation/flip variants (max 8)
+- For each region, use backtracking to try placing all required presents
+- Early termination if total cells exceed available grid area
+
+**Algorithm:**
+1. Parse shape definitions:
+   - Read shape index and colon line
+   - Read 3 lines of 3 characters each for shape grid
+   - Generate all unique variants via rotations and flips
+2. For each region query:
+   - Parse dimensions and shape counts
+   - Check if total cells fit in area (quick rejection)
+   - Run backtracking solver:
+     - Find first shape with remaining count > 0
+     - Try placing each variant at each position
+     - If placement valid, recurse with reduced count
+     - Backtrack if recursion fails
+   - Count region as "fit" if solver returns true
+3. Output total number of regions that can fit their presents
+
+**Backtracking Details:**
+- Processes shapes in order (shape 0 first, then 1, etc.)
+- Tries all grid positions for each variant
+- Uses marker values to distinguish different placed shapes
+- Unmarks cells when backtracking
+
+**Input Format:**
+```
+0:
+###
+##.
+##.
+
+4x4: 0 0 0 0 2 0
+12x5: 1 0 1 0 2 2
+```
+
+**Constants:**
+- `MAX_SHAPES` (6): Number of unique present shapes
+- `SHAPE_SIZE` (3): Dimensions of shape definition grid
+- `MAX_ROTATIONS` (8): Maximum variants per shape (4 rotations × 2 flips)
+- `MAX_WIDTH` (60): Maximum region width
+- `MAX_HEIGHT` (60): Maximum region height
+
+**Variables:**
+- `width`, `height` (global int): Current region dimensions
+- `fit_count` (int): Number of regions that fit all presents
+- `region_num` (int): Current region being processed
+
+---
